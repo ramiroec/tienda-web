@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Minimalista</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .product-card h2 {
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+        }
+
+        .product-card p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+
+        .brand {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .cta {
+            display: block;
+            padding: 0.75rem;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 1rem auto;
+            width: 80%;
+            text-align: center;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Tienda Minimalista
+</header>
+<a href="reporte.html"> Reporte</a>
+<div class="container" id="product-list">
+    <!-- Los productos serán insertados aquí dinámicamente -->
+</div>
+
+<script>
+    // URLs de las APIs
+    const productosApi = 'https://tienda-pwab.onrender.com/producto';
+    const marcasApi = 'https://tienda-pwab.onrender.com/marca';
+
+    // Función para obtener las marcas y mapearlas por su ID
+    async function obtenerMarcas() {
+        const response = await fetch(marcasApi);
+        const data = await response.json();
+        const marcas = {};
+        data.data.forEach(marca => {
+            marcas[marca.id] = marca.nombre;
+        });
+        return marcas;
+    }
+
+    // Función para obtener los productos y renderizarlos
+    async function listarProductos() {
+        const productList = document.getElementById('product-list');
+        const response = await fetch(productosApi);
+        const productos = await response.json();
+
+        const marcas = await obtenerMarcas(); // Obtener las marcas
+
+        productos.data.forEach(producto => {
+            // Crear la tarjeta de producto
+            const card = document.createElement('div');
+            card.classList.add('product-card');
+
+            card.innerHTML = `
+                <img src="${producto.foto}" alt="${producto.nombre}">
+                <h2>${producto.nombre}</h2>
+                <p class="brand">Marca: ${marcas[producto.id_marca]}</p>
+                <p class="price">$${producto.precio.toFixed(2)}</p>
+                <a href="#" class="cta">Comprar</a>
+            `;
+
+            // Agregar la tarjeta al contenedor
+            productList.appendChild(card);
+        });
+    }
+
+    // Llamar a la función para listar los productos al cargar la página
+    listarProductos();
+</script>
+
+</body>
+</html>
